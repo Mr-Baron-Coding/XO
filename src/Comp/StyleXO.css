@@ -1,0 +1,41 @@
+.tikTackToe {
+    align-items: center;
+    width: 20rem;
+    margin: auto;
+    text-align: center;
+    display: block;
+}
+
+.mainDiv {
+    align-items: center;
+    display: block; 
+}
+
+.scoreStyle {
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.scoreStyle div {
+    flex: 1;
+}
+
+table {
+    box-shadow: 2px 2px 2px 2px #888888;
+    height: 250px;
+    width: 250px;
+    margin: auto;
+}
+
+input {
+    height: 50px;
+    width: 50px;
+    padding: 0%;
+    margin: 0%;
+    text-align: center;
+    font-size: 40px;
+    border: none;
+    outline: none;
+
+}
