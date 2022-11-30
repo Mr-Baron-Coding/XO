@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './StyleXO.css';
+import { useSelector } from 'react-redux';
 
 export default function GameTable() {
+    const isMobile = useSelector((state) => state.mobile.isMobile);
     const [scores, setScores] = useState({ X: 0, O: 0 });    
     const [gameTable, setGameTable] = useState([            // game table base
         [ '','','' ],
@@ -9,15 +11,22 @@ export default function GameTable() {
         [ '','','' ]
     ]);
     const [isX, setIsX] = useState(true);                   // who's turn is it? 
-    const [isMessage, setIsMessage] = useState(false);      // display winner or new game button
-
-   
+    const [isMessage, setIsMessage] = useState(false);      // display winner or new game button 
+    const [drawMess, setDrawMess] = useState(false);
 
     // check for win/ end on every input
     useEffect(() => {
       winningCombo();
     
     }, [isX]);
+
+    // clearing draw header
+    useEffect(() => {
+        setTimeout(() => setDrawMess(false), 3000);
+        setTimeout(() => clearGame(), 4000);
+    
+    }, [drawMess]);
+    
 
     // reset game
     const clearGame = (val) => {
@@ -27,31 +36,61 @@ export default function GameTable() {
         setIsX(true);
 
     };
+
+    // the X/O shapes
+    const iconStyle = () => {
+        return (
+            isX ?
+            <div className='xIconStyle'>
+                <div className='lineOne'></div>
+                <div className='lineTwo'></div>
+            </div>
+            : 
+            <div className='oIconStyle'>
+                <div className='sphereOne'></div>
+                <div className='sphereTwo'></div>
+            </div>
+        )
+    
+    };
     
     // print game table
     const rowOrBox = () => {
         return (
-            <tbody>
+            <>
                 { gameTable.map((row,rowI) => {
                     return (
-                        <tr key={`row_${rowI}`}>
+                        <div className='columns' key={`row_${rowI}`}>
                             { row.map((cell, cellI) => {
                                 return (
-                                    <td key={ `cellI_${rowI}${cellI}`}>
-                                        <input 
-                                            key={ `input_${rowI}${cellI}` } 
-                                            value={ cell === '' ? '' : cell }
-                                            style ={{border: '1px solid black'}} 
+                                    <div 
+                                        key={ `cellI_${rowI}${cellI}` } 
+                                        className={ `xocol_${rowI+1} xorow_${cellI+1} xoCellContainer` }
+                                    >
+                                        {/* the players placment */}
+                                        <div 
+                                            className={`cellsXO ${cell}`}
                                             onClick={ () => inputThis(rowI, cellI) }
-                                            readOnly
-                                        />
-                                    </td>
+                                        >
+                                            { cell === '' ? '' : cell === 'X' ? <div className='xIconStyle'><div className='lineOne'></div><div className='lineTwo'></div></div> : <div className='oIconStyle'><div className='sphereOne'></div><div className='sphereTwo'></div></div> }
+                                        </div>
+                                        {/* hover effect */}
+                                        { cell === '' && !isMobile ?
+                                        <div 
+                                            className={ isX ? `hover_${rowI+1}${cellI+1} display_X` : `hover_${rowI+1}${cellI+1} display_O`}
+                                        >
+                                            { iconStyle() }
+                                        </div>
+                                        : null
+                                        }
+                                        
+                                    </div>
                                 )
                             })}
-                        </tr>
+                        </div>
                     )
                 })}
-            </tbody>
+            </>
         )
                 
     };
@@ -77,7 +116,7 @@ export default function GameTable() {
                 return  count++
             }
         }))
-        if( count === 9 && !isMessage ) { return console.log('Draw');}
+        if( count === 9 && !isMessage ) { setDrawMess(true) }
     };
 
      // check for posible wining positions
@@ -169,7 +208,7 @@ export default function GameTable() {
     const displayButton = () => {
         return (
             <div 
-                style={{ width: '100%', border: 'none', background: 'none' }} 
+                className='newGameButton'
                 onClick={ () => clearGame() }
             >
                 New Game
@@ -177,24 +216,23 @@ export default function GameTable() {
         )
     };
     const displayMess = () => {
-            return !isX ? 'X won' : 'O Won';
+            return !isX ? <span style={{ color: 'red' }}>X Won!</span> : <span style={{ color: 'blue' }}>O Won!</span>;
         
     };
     
   return (
     <div className='tikTackToe'>
+        { drawMess ? <div className='drawMessStyle'>Draw</div> : null}
+        <div className='bottomDiv'>
+            { isMessage ? displayMess() : displayButton() }
+            <div onClick={ () => setScores({ X: 0, O: 0 })}>Reset Score</div>
+        </div>
         <div className='scoreStyle'>
             <div>Score: </div>
             <div>X: { scores.X }</div>
             <div>O: { scores.O }</div>    
-            <div onClick={ () => setScores({ X: 0, O: 0 })}>Reset</div>    
         </div>
-        <table>
-                { rowOrBox() }
-        </table>
-        
-        { isMessage ? displayMess() : displayButton() } 
-        
+        <div className='gameFaceContainer'>{ rowOrBox() }</div>
     </div>
   )
 }

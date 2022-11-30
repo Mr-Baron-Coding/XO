@@ -1,23 +1,22 @@
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useMediaQuery } from '@mui/material';
+import { changeScreenSize } from './Features/mobileSlice';
 import './App.css';
+import GameTable from './Comp/GameTable';
 
 function App() {
+  const dispatch = useDispatch();
+  const matches = useMediaQuery('(max-width:1000px)');
+
+  useEffect(() => {
+    dispatch(changeScreenSize(matches));
+
+  }, [matches, dispatch]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <GameTable />
     </div>
   );
 }
